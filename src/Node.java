@@ -28,4 +28,8 @@ public class Node {
     public int removeElement(int index) {
         return this.elements.remove(-1);
     }
+
+    public boolean contains(int element) {
+        return this.elements.contains(element);
+    }
 }

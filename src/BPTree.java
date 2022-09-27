@@ -18,10 +18,12 @@ public class BPTree {
         // When the tree is not empty
         if (root != null) {
 
-            // Find the leaf node
-            LeafNode currentNode = findLeafNode(root, key);
+            int newKey = recursiveInsert(root, key, record);
 
-            // TO BE CONTINUED
+            // Add new key in root node
+            if (newKey != -1) {
+                // TO BE CONTINUED..................................
+            }
 
         // When the tree is empty
         } else {
@@ -34,6 +36,76 @@ public class BPTree {
             node.addElement(0, key);
             node.addRecord(0, record);
         }
+    }
+
+    private int recursiveInsert(Node node, int key, Record record) {
+        int upperKey = -1;
+        int newKey = -1;
+
+        // If node is internal node
+        if (node instanceof NonLeafNode) {
+            NonLeafNode currentNode = (NonLeafNode) node;
+            Node childNode = null;
+            int index;
+
+            List<Integer> elements = currentNode.getElements();
+
+            // Find bucket containing key
+            for (index = 0; index < elements.size(); index++) {
+                if (key <= elements.get(index)) {
+                    childNode = currentNode.getChild(index);
+                    break;
+                }
+            }
+
+            // Otherwise use last bucket
+            if (childNode == null) {
+                childNode = currentNode.getChild(index);
+            }
+
+            newKey = recursiveInsert(childNode, key, record);
+
+        // Otherwise if node is leaf node
+        } else {
+            LeafNode currentNode = (LeafNode) node;
+            int index;
+
+            // Find the location to insert the key
+            for (index = 0; index < currentNode.numElements(); index++) {
+                if (key < currentNode.getElement(index)) {
+                    break;
+                }
+            }
+
+            // If there is vacancy in the node
+            if (currentNode.numKeyRecordEntries() < order) {
+
+                // If the key is not already in the node
+                if (currentNode.contains(key) == false) {
+
+                    // Add key to the node
+                    currentNode.addElement(index, key);
+
+                    // Create List for SameKeyRecords
+                    currentNode.createRecordList(index);
+                }
+
+                // Add record to recordList
+                currentNode.addRecord(index, record);
+
+            // Otherwise if there is no vacancy
+            } else {
+                // TO BE CONTINUED...............................
+            }
+
+        }
+
+        // If new key needs to be inserted at this level
+        if (newKey != -1) {
+            // TO BE CONTINUED....................................
+        }
+
+        return upperKey;
     }
 
     public void deleteKey(int Key) {
@@ -56,13 +128,16 @@ public class BPTree {
             // Find the lower bound
             while (currentKey <= maxKey) {
 
-                // If key is in range, add record
+                // If key is in range, add records
                 if (currentKey >= minKey) {
-                    records.add(currentNode.getRecord(currentIndex));
+                    List<Record> sameKeyRecords = currentNode.getSameKeyRecords(currentIndex);
+                    for (Record record : sameKeyRecords) {
+                        records.add(record);
+                    }
                 }
 
                 // If not last element, go to the next element
-                if (currentIndex < currentNode.numRecords() - 1) {
+                if (currentIndex < currentNode.numElements() - 1) {
                     currentIndex += 1;
 
                     // If at last element, go to next node

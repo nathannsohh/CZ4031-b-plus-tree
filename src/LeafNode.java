@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class LeafNode extends Node{
     // List of Pointers to Records
-    private List<Record> records;
+    private List<List<Record>> records;
     private Node nextNode;
 
     public LeafNode() {
@@ -11,19 +11,39 @@ public class LeafNode extends Node{
         this.nextNode = null;
     }
 
-    public int numRecords() {
-        return this.records.size();
+    public int numKeyRecordEntries() {
+        return records.size();
+    }
+
+    public int totalRecords() {
+        int total = 0;
+        for (List<Record> sameKeyRecords : records) {
+            total += sameKeyRecords.size();
+        }
+        return total;
+    }
+
+    public int totalSameKeyRecords(int index) {
+        return this.records.get(index).size();
     }
 
     public void addRecord(int index, Record record) {
-        this.records.add(index, record);
+        this.records.get(index).add(record);
+    }
+    
+    public void removeRecord(int index, Record record) {
+        this.records.get(index).remove(record);
     }
 
-    public Record getRecord(int index) {
+    public void createRecordList(int index) {
+        this.records.add(index, new ArrayList<>());
+    }
+
+    public List<Record> getSameKeyRecords(int index) {
         return this.records.get(index);
     }
 
-    public Record removeRecord(int index) {
+    public List<Record> removeSameKeyRecords(int index) {
         return this.records.remove(index);
     }
 
