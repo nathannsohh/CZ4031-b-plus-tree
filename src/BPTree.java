@@ -17,34 +17,9 @@ public class BPTree {
 
         // When the tree is not empty
         if (root != null) {
-            Node node = root;
 
-            // While the current node is an internal node
-            while (node instanceof NonLeafNode) {
-                NonLeafNode currentNode = (NonLeafNode) node;
-                Node nextNode = null;
-                int index;
-
-                List<Integer> elements = currentNode.getElements();
-
-                // Find bucket containing key
-                for (index = 0; index < elements.size(); index++) {
-                    if (key <= elements.get(index)) {
-                        nextNode = currentNode.getChild(index);
-                        break;
-                    }
-                }
-
-                // Otherwise use last bucket or go to next node
-                if (nextNode == null) {
-                    nextNode = currentNode.getChild(index);
-                }
-
-                node = nextNode;
-            }
-
-            // When the current node is a leaf node
-            LeafNode currentNode = (LeafNode) node;
+            // Find the leaf node
+            LeafNode currentNode = findLeafNode(root, key);
 
             // TO BE CONTINUED
 
@@ -70,34 +45,9 @@ public class BPTree {
 
         // If the tree is not empty
         if (root != null) {
-            Node node = root;
 
-            // While the current node is an internal node
-            while (node instanceof NonLeafNode) {
-                NonLeafNode currentNode = (NonLeafNode) node;
-                Node nextNode = null;
-                int index;
-
-                List<Integer> elements = currentNode.getElements();
-
-                // Find bucket containing key
-                for (index = 0; index < elements.size(); index++) {
-                    if (minKey <= elements.get(index)) {
-                        nextNode = currentNode.getChild(index);
-                        break;
-                    }
-                }
-
-                // Otherwise use last bucket or go to next node
-                if (nextNode == null) {
-                    nextNode = currentNode.getChild(index);
-                }
-
-                node = nextNode;
-            }
-
-            // When the current node is a leaf node
-            LeafNode currentNode = (LeafNode) node;
+            // Find the leaf node
+            LeafNode currentNode = findLeafNode(root, minKey);
 
             // Find specified keys
             int currentIndex = 0;
@@ -130,6 +80,36 @@ public class BPTree {
         }
 
         return records;
+    }
+
+    private LeafNode findLeafNode(Node root, int key) {
+        Node node = root;
+
+        // While the current node is an internal node
+        while (node instanceof NonLeafNode) {
+            NonLeafNode currentNode = (NonLeafNode) node;
+            Node nextNode = null;
+            int index;
+
+            List<Integer> elements = currentNode.getElements();
+
+            // Find bucket containing key
+            for (index = 0; index < elements.size(); index++) {
+                if (key <= elements.get(index)) {
+                    nextNode = currentNode.getChild(index);
+                    break;
+                }
+            }
+
+            // Otherwise use last bucket or go to next node
+            if (nextNode == null) {
+                nextNode = currentNode.getChild(index);
+            }
+
+            node = nextNode;
+        }
+
+        return (LeafNode)node;
     }
 
     public static void main(String[] args) {
