@@ -18,13 +18,21 @@ public class BPTree {
         // When the tree is not empty
         if (root != null) {
 
-            int newKey = recursiveInsert(root, key, record);
+            // Find key and insert starting from root node
+            KeyNodePair newPair = recursiveInsert(root, key, record);
 
-            // Add new key in root node
-            if (newKey != -1) {
-                // Check for vacancy
-                // Otherwise create new node and create new root
-                // TO BE CONTINUED..................................
+            // If root node is overloaded
+            if (newPair != null) {
+
+                // Create new root node
+                NonLeafNode newRoot = new NonLeafNode();
+
+                newRoot.addChild(0, root);
+                newRoot.addElement(0, newPair.getKey());
+                newRoot.addChild(1, newPair.getNode());
+
+                // Set as new root
+                this.root = newRoot;
             }
 
         // When the tree is empty
@@ -40,9 +48,9 @@ public class BPTree {
         }
     }
 
-    private int recursiveInsert(Node node, int key, Record record) {
-        int upperKey = -1;
-        int newKey = -1;
+    private KeyNodePair recursiveInsert(Node node, int key, Record record) {
+        KeyNodePair upperPair = null;
+        KeyNodePair newPair = null;
 
         // If node is internal node
         if (node instanceof NonLeafNode) {
@@ -65,16 +73,17 @@ public class BPTree {
                 childNode = currentNode.getChild(index);
             }
 
-            newKey = recursiveInsert(childNode, key, record);
+            // Find key and insert in child node
+            newPair = recursiveInsert(childNode, key, record);
 
             // If new child needs to be inserted at this level (for internal nodes)
-            if (newKey != -1) {
+            if (newPair != null) {
 
                 // Add key to the node
-                currentNode.addElement(index, newKey);
+                currentNode.addElement(index, newPair.getKey());
 
                 // Add child to the node
-                currentNode.addChild(index, childNode);
+                currentNode.addChild(index, newPair.getNode());
 
                 // If size of children exceeds order
                 if (currentNode.numChildren() > order) {
@@ -90,8 +99,8 @@ public class BPTree {
                     int keyMidpoint = (int)Math.floor(currentNode.numElements() / 2);
                     int childMidpoint = (int)Math.floor((currentNode.numChildren() + 1) / 2);
 
-                    // Return upperkey
-                    upperKey = currentNode.getElement(keyMidpoint+1);
+                    // Return new (key and node) to parent node
+                    upperPair = new KeyNodePair(currentNode.getElement(keyMidpoint+1), newNode);
 
                     // Split Key List
                     List<Integer> firstElementsList = currentNode.getElements().subList(0, keyMidpoint+1);
@@ -160,11 +169,11 @@ public class BPTree {
                 newNode.setNextNode(currentNode.getNextNode());
                 currentNode.setNextNode(newNode);
 
-                // Return upperkey
-                upperKey = newNode.getElement(0);
+                // Return new (key and node) to parent node
+                upperPair = new KeyNodePair(newNode.getElement(0), newNode);
             }
         }
-        return upperKey;
+        return upperPair;
     }
 
     public void deleteKey(int Key) {
