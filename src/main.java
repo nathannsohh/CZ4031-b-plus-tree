@@ -7,8 +7,8 @@ public class main {
 		// TODO Auto-generated method stub
 		
 		String dir = System.getProperty("user.dir");
-		// String file = dir + "\\data\\data.tsv";
-		String file = dir + "/data/data.tsv";
+		String file = dir + "\\data\\data.tsv";
+		// String file = dir + "/data/data.tsv";
 		
 		File inputFile = new File(file);
 		
@@ -17,8 +17,6 @@ public class main {
 		try {
 			//start loading data
 			Scanner sc = new Scanner(inputFile);
-			
-			Block newBlock = null;
 			
 			sc.nextLine(); //skip the first line (the column line)
 			while(sc.hasNextLine()) {
@@ -33,8 +31,49 @@ public class main {
 			sc.close();
 			// finish loading data
 			
-			System.out.println("Experiment 1");
-			db.printDatabaseInfo();
+			boolean exit = false;
+			while(!exit) {
+				System.out.println("=========================Experiments======================");
+				System.out.println("1: Experiment 1");
+				System.out.println("2: Experiment 2");
+				System.out.println("3: Experiment 3");
+				System.out.println("4: Experiment 4");
+				System.out.println("5: Experiment 5");
+				System.out.println("6: Quit");
+				
+				Scanner scan = new Scanner(System.in);
+				int choice = scan.nextInt();
+				
+				if (choice == 1) {
+					System.out.println("[Starting experiment 1]");
+					
+					db.printDatabaseInfo();
+				
+				} else if (choice == 2) {
+					System.out.println("[Starting experiment 2]");
+					
+				
+				} else if (choice == 3) {
+					System.out.println("[Starting experiment 3]");
+					
+					
+				} else if (choice == 4) {
+					System.out.println("[Starting experiment 4]");
+					
+					
+				} else if (choice == 5) {
+					System.out.println("[Starting experiment 5]");
+					
+					
+				} else if (choice == 6) {
+					System.out.println("Quiting...");
+					scan.close();
+					exit = true;
+					
+				} else {
+					System.out.println("Input invalid!");
+				}
+			}
 			
 		}catch(Exception e) {
 			e.printStackTrace();
