@@ -13,6 +13,12 @@ public class BPTree {
         this.height = 0;
     }
 
+
+
+    /* --------------------------- INSERT KEY --------------------------- */
+
+
+
     public void insertKey(int key, Record record) {
 
         // When the tree is not empty
@@ -76,45 +82,20 @@ public class BPTree {
             // Find key and insert in child node
             newPair = recursiveInsert(childNode, key, record);
 
-            // If new child needs to be inserted at this level (for internal nodes)
+            // If child node is overloaded
             if (newPair != null) {
 
-                // Add key to the node
+                // Add key to curent node
                 currentNode.addElement(index, newPair.getKey());
 
-                // Add child to the node
+                // Add child to current node
                 currentNode.addChild(index, newPair.getNode());
 
                 // If size of children exceeds order
                 if (currentNode.numChildren() > order) {
 
-                    // Create a new node
-                    NonLeafNode newNode = new NonLeafNode();
-
-                    // Examples:
-                    // order = 3; 3key, 4ptr; +1key/ptr -> 2key, 3ptr, 1key, 2ptr 
-                    // p k1 p k2 p k3 p k4 p -> p k1 p k2 p : p k4 p
-                    // order = 4; 4key, 5ptr; +1key/ptr -> 2key, 3ptr; 2key, 3ptr
-                    // p k1 p k2 p k3 p k4 p k5 p -> p k1 p k2 p : p k4 p k5 p
-                    int keyMidpoint = (int)Math.floor(currentNode.numElements() / 2);
-                    int childMidpoint = (int)Math.floor((currentNode.numChildren() + 1) / 2);
-
-                    // Return new (key and node) to parent node
-                    upperPair = new KeyNodePair(currentNode.getElement(keyMidpoint+1), newNode);
-
-                    // Split Key List
-                    List<Integer> firstElementsList = currentNode.getElements().subList(0, keyMidpoint+1);
-                    List<Integer> secondElementsList = currentNode.getElements().subList(keyMidpoint+2, -1);
-
-                    newNode.setElements(firstElementsList);
-                    currentNode.setElements(secondElementsList);
-
-                    // Split Children List
-                    List<Node> firstChildrenList = currentNode.getChildren().subList(0, childMidpoint+1);
-                    List<Node> secondChildrenList = currentNode.getChildren().subList(childMidpoint+1, -1);
-
-                    newNode.setChildren(firstChildrenList);
-                    currentNode.setChildren(secondChildrenList);
+                    // Create new internal node
+                    upperPair = createInternalNode(currentNode, index, newPair);
                 }
             }
 
@@ -146,39 +127,93 @@ public class BPTree {
             // If size of records exceeds order
             if (currentNode.numKeyRecordEntries() > order) {
 
-                // Create a new node
-                LeafNode newNode = new LeafNode();
-
-                int midpoint = (int)Math.floor((currentNode.numKeyRecordEntries() + 1) / 2);
-
-                // Split Key List
-                List<Integer> firstElementsList = currentNode.getElements().subList(0, midpoint+1);
-                List<Integer> secondElementsList = currentNode.getElements().subList(midpoint+1, -1);
-
-                newNode.setElements(firstElementsList);
-                currentNode.setElements(secondElementsList);
-
-                // Split Record List
-                List<List<Record>> firstRecordsList = currentNode.getRecords().subList(0, midpoint+1);
-                List<List<Record>> secondRecordsList = currentNode.getRecords().subList(midpoint+1, -1);
-
-                newNode.setRecords(firstRecordsList);
-                currentNode.setRecords(secondRecordsList);
-
-                // Set Next Nodes
-                newNode.setNextNode(currentNode.getNextNode());
-                currentNode.setNextNode(newNode);
-
-                // Return new (key and node) to parent node
-                upperPair = new KeyNodePair(newNode.getElement(0), newNode);
+                // Create new leaf node
+                upperPair = createLeafNode(currentNode);
             }
         }
+
+        // Return a new (key, node) pair to parent node if a new node is created
         return upperPair;
     }
+
+    private KeyNodePair createInternalNode(NonLeafNode currentNode, int index, KeyNodePair newPair) {
+
+        // Create a new node
+        NonLeafNode newNode = new NonLeafNode();
+
+        // Examples:
+        // order = 3; 3key, 4ptr; +1key/ptr -> 2key, 3ptr, 1key, 2ptr 
+        // p k1 p k2 p k3 p k4 p -> p k1 p k2 p : p k4 p
+        // order = 4; 4key, 5ptr; +1key/ptr -> 2key, 3ptr; 2key, 3ptr
+        // p k1 p k2 p k3 p k4 p k5 p -> p k1 p k2 p : p k4 p k5 p
+        int keyMidpoint = (int)Math.floor(currentNode.numElements() / 2);
+        int childMidpoint = (int)Math.floor((currentNode.numChildren() + 1) / 2);
+
+        // Return new (key and node) to parent node
+        KeyNodePair upperPair = new KeyNodePair(currentNode.getElement(keyMidpoint+1), newNode);
+
+        // Split Key List
+        List<Integer> firstElementsList = currentNode.getElements().subList(0, keyMidpoint+1);
+        List<Integer> secondElementsList = currentNode.getElements().subList(keyMidpoint+2, -1);
+
+        newNode.setElements(firstElementsList);
+        currentNode.setElements(secondElementsList);
+
+        // Split Children List
+        List<Node> firstChildrenList = currentNode.getChildren().subList(0, childMidpoint+1);
+        List<Node> secondChildrenList = currentNode.getChildren().subList(childMidpoint+1, -1);
+
+        newNode.setChildren(firstChildrenList);
+        currentNode.setChildren(secondChildrenList);
+
+        // Return the new node and its corresponding key as a (key, node) pair
+        return upperPair;
+    }
+
+    private KeyNodePair createLeafNode(LeafNode currentNode) {
+
+        // Create a new node
+        LeafNode newNode = new LeafNode();
+
+        int midpoint = (int)Math.floor((currentNode.numKeyRecordEntries() + 1) / 2);
+
+        // Split Key List
+        List<Integer> firstElementsList = currentNode.getElements().subList(0, midpoint+1);
+        List<Integer> secondElementsList = currentNode.getElements().subList(midpoint+1, -1);
+
+        newNode.setElements(firstElementsList);
+        currentNode.setElements(secondElementsList);
+
+        // Split Record List
+        List<List<Record>> firstRecordsList = currentNode.getRecords().subList(0, midpoint+1);
+        List<List<Record>> secondRecordsList = currentNode.getRecords().subList(midpoint+1, -1);
+
+        newNode.setRecords(firstRecordsList);
+        currentNode.setRecords(secondRecordsList);
+
+        // Set Next Nodes
+        newNode.setNextNode(currentNode.getNextNode());
+        currentNode.setNextNode(newNode);
+
+        // Return the new node and its corresponding key as a (key, node) pair
+        return (new KeyNodePair(newNode.getElement(0), newNode));
+    }
+
+
+
+    /* --------------------------- DELETE KEY --------------------------- */
+
+
 
     public void deleteKey(int Key) {
         // CODE TO DELETE KEY
     }
+
+
+
+    /* --------------------------- SEARCH KEY --------------------------- */
+
+
 
     public List<Record> searchRecords(int minKey, int maxKey) {
         List<Record> records = new ArrayList<>();
@@ -254,6 +289,12 @@ public class BPTree {
 
         return (LeafNode)node;
     }
+
+
+
+    /* --------------------------- TESTING --------------------------- */
+
+
 
     public static void main(String[] args) {
         BPTree tree = new BPTree(3);
