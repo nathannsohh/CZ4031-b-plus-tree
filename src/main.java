@@ -12,7 +12,27 @@ public class main {
 		
 		File inputFile = new File(file);
 		
-		Database db = new Database(500000000, 200);
+		boolean exit = false;
+		Database db = null;
+		while(!exit) {
+			System.out.println("============================Select Byte Size============================");
+			System.out.println("1: Select 100 Bytes");
+			System.out.println("2: Select 500 Bytes");
+			System.out.println("3: Quit");
+			
+			Scanner scan = new Scanner(System.in);
+			int choice = scan.nextInt();
+			
+			if (choice == 1) {
+				db = new Database(500000000, 200);
+				exit = true;
+			} else if (choice == 2) {
+				db = new Database(500000000, 500);
+				exit = true;
+			} else {
+				System.out.println("Invalid input");
+			}
+		}
 		
 		try {
 			//start loading data
@@ -31,9 +51,9 @@ public class main {
 			sc.close();
 			// finish loading data
 			
-			boolean exit = false;
+			exit = false;
 			while(!exit) {
-				System.out.println("=========================Experiments======================");
+				System.out.println("\n=========================Experiments======================");
 				System.out.println("1: Experiment 1");
 				System.out.println("2: Experiment 2");
 				System.out.println("3: Experiment 3");
@@ -45,24 +65,24 @@ public class main {
 				int choice = scan.nextInt();
 				
 				if (choice == 1) {
-					System.out.println("[Starting experiment 1]");
+					System.out.println("\n[Starting experiment 1]\n");
 					
 					db.printDatabaseInfo();
 				
 				} else if (choice == 2) {
-					System.out.println("[Starting experiment 2]");
+					System.out.println("\n[Starting experiment 2]\n");
 					
 				
 				} else if (choice == 3) {
-					System.out.println("[Starting experiment 3]");
+					System.out.println("\n[Starting experiment 3]\n");
 					
 					
 				} else if (choice == 4) {
-					System.out.println("[Starting experiment 4]");
+					System.out.println("\n[Starting experiment 4]\n");
 					
 					
 				} else if (choice == 5) {
-					System.out.println("[Starting experiment 5]");
+					System.out.println("\n[Starting experiment 5]\n");
 					
 					
 				} else if (choice == 6) {
