@@ -67,6 +67,48 @@ public class BPTree {
 
             newKey = recursiveInsert(childNode, key, record);
 
+            // If new child needs to be inserted at this level (for internal nodes)
+            if (newKey != -1) {
+
+                // Add key to the node
+                currentNode.addElement(index, newKey);
+
+                // Add child to the node
+                currentNode.addChild(index, childNode);
+
+                // If size of children exceeds order
+                if (currentNode.numChildren() > order) {
+
+                    // Create a new node
+                    NonLeafNode newNode = new NonLeafNode();
+
+                    // Examples:
+                    // order = 3; 3key, 4ptr; +1key/ptr -> 2key, 3ptr, 1key, 2ptr 
+                    // p k1 p k2 p k3 p k4 p -> p k1 p k2 p : p k4 p
+                    // order = 4; 4key, 5ptr; +1key/ptr -> 2key, 3ptr; 2key, 3ptr
+                    // p k1 p k2 p k3 p k4 p k5 p -> p k1 p k2 p : p k4 p k5 p
+                    int keyMidpoint = (int)Math.floor(currentNode.numElements() / 2);
+                    int childMidpoint = (int)Math.floor((currentNode.numChildren() + 1) / 2);
+
+                    // Return upperkey
+                    upperKey = currentNode.getElement(keyMidpoint+1);
+
+                    // Split Key List
+                    List<Integer> firstElementsList = currentNode.getElements().subList(0, keyMidpoint+1);
+                    List<Integer> secondElementsList = currentNode.getElements().subList(keyMidpoint+2, -1);
+
+                    newNode.setElements(firstElementsList);
+                    currentNode.setElements(secondElementsList);
+
+                    // Split Children List
+                    List<Node> firstChildrenList = currentNode.getChildren().subList(0, childMidpoint+1);
+                    List<Node> secondChildrenList = currentNode.getChildren().subList(childMidpoint+1, -1);
+
+                    newNode.setChildren(firstChildrenList);
+                    currentNode.setChildren(secondChildrenList);
+                }
+            }
+
         // Otherwise if node is leaf node
         } else {
             LeafNode currentNode = (LeafNode) node;
@@ -95,37 +137,33 @@ public class BPTree {
             // If size of records exceeds order
             if (currentNode.numKeyRecordEntries() > order) {
 
-                // C
+                // Create a new node
                 LeafNode newNode = new LeafNode();
 
                 int midpoint = (int)Math.floor((currentNode.numKeyRecordEntries() + 1) / 2);
 
+                // Split Key List
                 List<Integer> firstElementsList = currentNode.getElements().subList(0, midpoint+1);
-                List<Integer> secondElementsList = currentNode.getElements().subList(midpoint+1, 0);
+                List<Integer> secondElementsList = currentNode.getElements().subList(midpoint+1, -1);
 
                 newNode.setElements(firstElementsList);
                 currentNode.setElements(secondElementsList);
 
+                // Split Record List
                 List<List<Record>> firstRecordsList = currentNode.getRecords().subList(0, midpoint+1);
-                List<List<Record>> secondRecordsList = currentNode.getRecords().subList(midpoint+1, 0);
+                List<List<Record>> secondRecordsList = currentNode.getRecords().subList(midpoint+1, -1);
 
                 newNode.setRecords(firstRecordsList);
                 currentNode.setRecords(secondRecordsList);
 
+                // Set Next Nodes
                 newNode.setNextNode(currentNode.getNextNode());
                 currentNode.setNextNode(newNode);
 
+                // Return upperkey
                 upperKey = newNode.getElement(0);
             }
         }
-
-        // If new key needs to be inserted at this level (for internal nodes)
-        if (newKey != -1) {
-            // Check for vacancy
-            // Otherwise create new node and define upperKey
-            // TO BE CONTINUED....................................
-        }
-
         return upperKey;
     }
 
@@ -191,13 +229,13 @@ public class BPTree {
 
             // Find bucket containing key
             for (index = 0; index < elements.size(); index++) {
-                if (key <= elements.get(index)) {
+                if (key < elements.get(index)) {
                     nextNode = currentNode.getChild(index);
                     break;
                 }
             }
 
-            // Otherwise use last bucket or go to next node
+            // Otherwise use last bucket
             if (nextNode == null) {
                 nextNode = currentNode.getChild(index);
             }

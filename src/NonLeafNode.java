@@ -13,6 +13,14 @@ public class NonLeafNode extends Node {
         return this.children.size();
     }
 
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Node> children) {
+        this.children = children;
+    }
+
     public void addChild(int index, Node child) {
         this.children.add(index, child);
     }
