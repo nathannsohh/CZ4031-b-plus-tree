@@ -22,6 +22,8 @@ public class BPTree {
 
             // Add new key in root node
             if (newKey != -1) {
+                // Check for vacancy
+                // Otherwise create new node and create new root
                 // TO BE CONTINUED..................................
             }
 
@@ -77,31 +79,50 @@ public class BPTree {
                 }
             }
 
-            // If there is vacancy in the node
-            if (currentNode.numKeyRecordEntries() < order) {
+            // If the key is not already in the node
+            if (currentNode.contains(key) == false) {
 
-                // If the key is not already in the node
-                if (currentNode.contains(key) == false) {
+                // Add key to the node
+                currentNode.addElement(index, key);
 
-                    // Add key to the node
-                    currentNode.addElement(index, key);
-
-                    // Create List for SameKeyRecords
-                    currentNode.createRecordList(index);
-                }
-
-                // Add record to recordList
-                currentNode.addRecord(index, record);
-
-            // Otherwise if there is no vacancy
-            } else {
-                // TO BE CONTINUED...............................
+                // Create List for SameKeyRecords
+                currentNode.createRecordList(index);
             }
 
+            // Add record to recordList
+            currentNode.addRecord(index, record);
+
+            // If size of records exceeds order
+            if (currentNode.numKeyRecordEntries() > order) {
+
+                // C
+                LeafNode newNode = new LeafNode();
+
+                int midpoint = (int)Math.floor((currentNode.numKeyRecordEntries() + 1) / 2);
+
+                List<Integer> firstElementsList = currentNode.getElements().subList(0, midpoint+1);
+                List<Integer> secondElementsList = currentNode.getElements().subList(midpoint+1, 0);
+
+                newNode.setElements(firstElementsList);
+                currentNode.setElements(secondElementsList);
+
+                List<List<Record>> firstRecordsList = currentNode.getRecords().subList(0, midpoint+1);
+                List<List<Record>> secondRecordsList = currentNode.getRecords().subList(midpoint+1, 0);
+
+                newNode.setRecords(firstRecordsList);
+                currentNode.setRecords(secondRecordsList);
+
+                newNode.setNextNode(currentNode.getNextNode());
+                currentNode.setNextNode(newNode);
+
+                upperKey = newNode.getElement(0);
+            }
         }
 
-        // If new key needs to be inserted at this level
+        // If new key needs to be inserted at this level (for internal nodes)
         if (newKey != -1) {
+            // Check for vacancy
+            // Otherwise create new node and define upperKey
             // TO BE CONTINUED....................................
         }
 

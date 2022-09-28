@@ -33,6 +33,15 @@ public class LeafNode extends Node{
     
     public void removeRecord(int index, Record record) {
         this.records.get(index).remove(record);
+        // Missing check for empty list of sameKeyRecords
+    }
+
+    public List<List<Record>> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<List<Record>> records) {
+        this.records = records;
     }
 
     public void createRecordList(int index) {

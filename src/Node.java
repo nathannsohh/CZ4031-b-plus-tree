@@ -13,6 +13,10 @@ public class Node {
         return elements;
     }
 
+    public void setElements(List<Integer> elements) {
+        this.elements = elements;
+    }
+
     public int numElements() {
         return this.elements.size();
     }
