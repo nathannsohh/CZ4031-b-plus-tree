@@ -7,7 +7,8 @@ public class main {
 		// TODO Auto-generated method stub
 		
 		String dir = System.getProperty("user.dir");
-		String file = dir + "\\data\\data.tsv";
+		// String file = dir + "\\data\\data.tsv";
+		String file = dir + "/data/data.tsv";
 		
 		File inputFile = new File(file);
 		
@@ -16,8 +17,6 @@ public class main {
 		try {
 			//start loading data
 			Scanner sc = new Scanner(inputFile);
-			
-			int recordCounter = 0;
 			
 			Block newBlock = null;
 			
@@ -29,11 +28,8 @@ public class main {
 				Record rec = new Record(record[0], Float.parseFloat(String.valueOf(record[1])), Integer.parseInt(String.valueOf(record[2])));
 				
 				db.writeRecord(rec);
-				recordCounter += 1;
 			}
 			
-			db.totalNumRecords = recordCounter;
-			System.out.println(recordCounter);
 			sc.close();
 			// finish loading data
 			

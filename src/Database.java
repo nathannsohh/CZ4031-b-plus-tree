@@ -63,6 +63,7 @@ public class Database {
 
 
         if (recordCounter == recordsPerBlk) {
+            recordCounter = 0;
             allocateBlock();
         }
     }
@@ -85,12 +86,21 @@ public class Database {
     }
 
     public void printDatabaseInfo() {
+
+        // Check if the current block is partially filled and adds it to the count if it is
+        int numBlksAllocated = numAllocatedBlk;
+        int numBlksRemaining = numRemainingBlk;
+        if (blk.getRecords().size() > 0) {
+            numBlksAllocated++;
+            numBlksRemaining--;
+        }
+
         System.out.println("Total Memory Size: " + poolSize + " bytes");
         System.out.println("Total Size Used: " + totalNumRecords*recordSize + " bytes");
         System.out.println("Block Size: " + blkSize + " bytes");
         System.out.println("Record Size: " + recordSize + " bytes");
-        System.out.println("Number of Blocks Allocated: " + numAllocatedBlk + " blocks");
-        System.out.println("Number of Blocks Remaining: " + numRemainingBlk + " blocks");
+        System.out.println("Number of Blocks Allocated: " + numBlksAllocated + " blocks");
+        System.out.println("Number of Blocks Remaining: " + numBlksRemaining + " blocks");
         System.out.println("Total Number of Records: " + totalNumRecords);
     }
 }
