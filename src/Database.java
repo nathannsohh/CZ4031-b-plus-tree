@@ -35,6 +35,7 @@ public class Database {
         this.recordSize = (Float.SIZE / 8) + (Integer.SIZE / 8) + 10;
         this.recordsPerBlk = (int) Math.floor(blkSize/((Float.SIZE / 8) + (Integer.SIZE / 8) + 10));
         this.blk = new Block();
+        this.blkList = new ArrayList<Block>();
     }
 
     public boolean allocateBlock() {
