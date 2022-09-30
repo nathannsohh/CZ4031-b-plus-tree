@@ -1,4 +1,8 @@
 import java.util.List;
+
+import javax.swing.text.html.parser.TagElement;
+
+import java.security.Key;
 import java.util.ArrayList;
 
 public class BPTree {
@@ -6,6 +10,8 @@ public class BPTree {
     private int order;
     private Node root;
     private int height;
+    private int BlockAccess=0;
+    private int deletedNode=0;
 
     public BPTree(int order) {
         this.order = order;
@@ -207,6 +213,153 @@ public class BPTree {
 
     public void deleteKey(int Key) {
         // CODE TO DELETE KEY
+        
+        Node cur = this.root;
+
+        //minimum number of keys in a Non-Leaf Node
+        int minInternalKeys = (int)Math.floor((order+1)/2);
+
+        //minimum number of children for a Non-Leaf Node
+        int minInternalChildren = minInternalKeys+1;
+
+        //minimum number of keys for a Leaf Node
+        int minLeafNodeKeys = (int)Math.floor(order/2);
+
+        //iteration 1
+
+        //while there are nodes that contain the key value
+        while(findLeafNode(root, Key)!=null){
+        
+        //find if the leaf node with the key
+        LeafNode target = findLeafNode(root, Key);
+        
+        //get all keys in target node
+        List<Integer> elements = target.getElements();
+
+        // Find bucket containing key
+        for (int i = 0; i < elements.size(); i++) {
+            //if key value is the same as the element value, remove
+            if (Key == elements.get(i)) {
+                System.out.println("Removed");
+                elements.remove(i); // remove from the element list
+                target.removeElement(i); 
+                target.removeSameKeyRecords(i);
+                }
+        }
+
+        //instance - key was removed from the first index of the node
+        if(elements.size()>=minLeafNodeKeys){
+            //if key was removed at the first index, update the parent node
+            int newKey = elements.get(0);
+            updateParent(Key, newKey, Key);
+        }
+
+        //instance - size of current node is less than minLeafNode
+            else{
+            LeafNode prev = (LeafNode) target.getPreNode();
+            LeafNode next = (LeafNode) target.getNextNode();
+
+            //check if can borrow nodes from left sibling... if ok proceed
+            if( (prev.getElements().size() + elements.size()) <= 2*order &&  (prev.getElements().size() + elements.size())>order){
+                int firstKey = elements.get(0); //old key
+                int keyMidpoint = (int)Math.floor((prev.getElements().size() + elements.size()) / 2);
+                int prevSize = prev.getElements().size();
+
+                for(int i=0; i<(keyMidpoint-prevSize) ; i++){
+                    //balance out the sibling nodes
+                    prev.addElement(prevSize-1, elements.get(i));
+                    target.removeElement(i);
+                    elements.remove(i);
+                    //proceed to adjust the parent node
+                    //oldKey == firstKey
+                    //newkey is the first index of the new target node
+                }
+                int newKey = elements.get(0);
+                //update the parent node
+                updateParent(firstKey, newKey, Key);
+            }
+
+             //else check with the right sibling... if ok proceed
+            else if((next.getElements().size() + elements.size()) <= 2*order && (next.getElements().size() + elements.size())>order ){
+                int firstKey = next.getElements().get(0);
+                int keyMidpoint = (int)Math.floor((next.getElements().size() + elements.size()) / 2);
+                int nextSize = next.getElements().size();
+
+                for(int i=0; i<(keyMidpoint-nextSize) ; i++){
+                    //balance out the sibling nodes
+                    next.addElement(0, elements.get(i));
+                    target.removeElement(i);
+                    elements.remove(i);
+                    //proceed to adjust the parent node
+                    //move upwards to find the parent with the old key, update the key
+                }
+                int newKey = elements.get(0);
+                //update the parent node
+                updateParent(firstKey, newKey, Key);
+            }
+
+            //cannot borrow from siblings
+            else{
+                //if merging, less than equals to the order value
+                //merge with left node, delete target node and update parent
+                if(prev.numElements()==minInternalKeys){
+                    int firstKey = elements.get(0);
+                    for (int i=0; i<elements.size();i++){
+                        //add the key into the previous node
+                        prev.addElement(prev.numElements(),elements.get(i));
+                        //remove key from the target node
+                        elements.remove(0);
+                        target.removeElement(0);
+                    }
+                    updateParent(firstKey, -1 , Key);
+                }
+
+                //merge with right node, delete target node and update parent
+                else{
+                    if(prev.numElements()==minInternalKeys){
+                        for (int i=0; i<elements.size();i++){
+                            //add the key into the previous node
+                            prev.addElement(prev.numElements(),elements.get(i));
+                            //remove key from the target node
+                            elements.remove(0);
+                            target.removeElement(0);
+                        }
+                    }
+                }
+                deletedNode++;
+            }
+            
+
+        }
+    }
+    }
+
+    //oldKey - previous key the index 0 of leaf node
+    //newKey - new key at index 0 of leaf node
+    //targetKey - key that was removed
+    public void updateParent(int oldKey , int newKey , int targetKey){
+        Node node = root;
+        NonLeafNode currentNode = (NonLeafNode)node;
+
+        int min = -1;
+
+        while(currentNode instanceof NonLeafNode){
+            for(int index=0; index<node.numElements(); index++){
+                if(node.getElement(index) <= newKey)
+                    min=index;
+                
+                //find the key in the node
+                if(node.getElement(index) == targetKey || node.getElement(index) == oldKey){
+                    if(newKey==-1){
+                        node.removeElement(index);
+                    }
+                    node.addElement(index+1, newKey);
+                    node.removeElement(index);
+                }
+            }
+            //not found in current node, go to child node
+            currentNode = (NonLeafNode)currentNode.getChild(min);
+        }
     }
 
 
@@ -285,12 +438,13 @@ public class BPTree {
             }
 
             node = nextNode;
+            BlockAccess++;
         }
 
         return (LeafNode)node;
     }
 
-
+    
 
     /* --------------------------- TESTING --------------------------- */
 

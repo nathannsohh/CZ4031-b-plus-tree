@@ -5,10 +5,15 @@ public class LeafNode extends Node{
     // List of Pointers to Records
     private List<List<Record>> records;
     private Node nextNode;
+    //prevNode are nodes of same height
+    private Node prevNode;
+    private NonLeafNode parentNode;
 
     public LeafNode() {
         this.records = new ArrayList<>();
         this.nextNode = null;
+        this.prevNode = null;
+        this.parentNode = null;
     }
 
     public int numKeyRecordEntries() {
@@ -63,4 +68,22 @@ public class LeafNode extends Node{
     public void setNextNode(Node nextNode) {
         this.nextNode = nextNode;
     }
+
+    public void setPrevNode(Node prevNode){
+        this.prevNode = prevNode;
+    }
+
+    public void setParentNode(NonLeafNode parentNode){
+        this.parentNode = parentNode;
+    }
+
+    public Node getPreNode(){
+        return prevNode;
+    }
+
+    public NonLeafNode getParentNode(){
+        return parentNode;
+    }
+
+
 }
