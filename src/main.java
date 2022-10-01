@@ -51,6 +51,10 @@ public class main {
 				Record rec = new Record(record[0], Float.parseFloat(String.valueOf(record[1])), Integer.parseInt(String.valueOf(record[2])));
 				
 				db.writeRecord(rec);
+
+				RecordBlock rb = new RecordBlock(rec, block); // need the block
+				int key = rec.getNumVotes();
+				tree.insertKey(key, rb);
 			}
 			
 			sc.close();
