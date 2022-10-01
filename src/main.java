@@ -107,7 +107,8 @@ public class main {
 					
 				} else if (choice == 5) {
 					System.out.println("\n[Starting experiment 5]\n");
-					
+					tree.deleteKey(1000);
+					tree.printExp5();
 					
 				} else if (choice == 6) {
 					System.out.println("Quiting...");

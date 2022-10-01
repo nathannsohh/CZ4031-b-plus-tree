@@ -324,6 +324,7 @@ public class BPTree {
                 // Remove from the element list
                 targetNode.removeElement(index); 
                 targetNode.removeSameKeyRecords(index);
+                System.out.println("key: " + key + " deleted");
                 break;
                 }
         }
