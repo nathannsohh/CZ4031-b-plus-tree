@@ -420,7 +420,8 @@ public class BPTree {
 
             for (int index = 0; index < node.numElements(); index++) {
 
-                if (newKey <= node.getElement(index)) {
+                //find index of child node of old key
+                if (oldKey <= node.getElement(index)) {
                     childIndex=index;
                 }
                 
@@ -666,12 +667,12 @@ public class BPTree {
             tree.insertKey(25, new Record("25", 25, 25));
             tree.insertKey(5, new Record("5", 5, 5));
 
-            tree.insertKey(18, new Record("18", 18, 18));
+            tree.insertKey(23, new Record("23", 23, 23));
 
             tree.print();
             System.out.println();
 
-            tree.deleteKey(17);
+            tree.deleteKey(20);
 
             tree.print();
             System.out.println();
