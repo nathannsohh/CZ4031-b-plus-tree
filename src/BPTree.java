@@ -92,7 +92,7 @@ public class BPTree {
 
             // Find bucket containing key
             for (index = 0; index < elements.size(); index++) {
-                if (key <= elements.get(index)) {
+                if (key < elements.get(index)) {
                     childNode = currentNode.getChild(index);
                     break;
                 }
@@ -583,9 +583,9 @@ public class BPTree {
 
 
     public static void main(String[] args) {
-        int testSearchAndDuplicate = 0;
+        int testSearchAndDuplicate = 1;
         int testExp2 = 0;
-        int testDelete = 1;
+        int testDelete = 0;
 
         if (testSearchAndDuplicate == 1) {
             BPTree tree = new BPTree(3);
@@ -602,11 +602,10 @@ public class BPTree {
             tree.insertKey(20, new Record("20", 20, 20));
             tree.insertKey(28, new Record("28", 28, 28));
             tree.insertKey(42, new Record("42", 42, 42));
+            tree.insertKey(20, new Record("20A", 20, 20));
             tree.insertKey(21, new Record("21A", 21, 21));
-            tree.insertKey(21, new Record("21B", 21, 21));
-            tree.insertKey(21, new Record("21C", 21, 21));
-            tree.insertKey(4, new Record("4A", 4, 4));
-            tree.insertKey(10, new Record("10A", 10, 10));
+            // tree.insertKey(4, new Record("4A", 4, 4));
+            tree.insertKey(17, new Record("17A", 17, 17));
             tree.insertKey(19, new Record("19A", 19, 19));
 
             tree.print();
@@ -668,6 +667,7 @@ public class BPTree {
             tree.insertKey(5, new Record("5", 5, 5));
 
             tree.insertKey(23, new Record("23", 23, 23));
+            tree.insertKey(20, new Record("20A", 20, 20));
 
             tree.print();
             System.out.println();
@@ -678,6 +678,17 @@ public class BPTree {
             System.out.println();
 
             tree.printInfoExp5();
+
+            System.out.println("Search results for key 3-22");
+            List<Record> results = tree.searchRecords(3, 22);
+
+            if (results.size() == 0) {
+                System.out.println("No records found");
+            }
+
+            for (Record r : results) {
+                System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
+            }
         }
     }
 
