@@ -503,6 +503,19 @@ public class BPTree {
         tree.insertKey(42, new Record("42", 42, 42));
 
         tree.print();
+
+        System.out.println();
+
+        System.out.println("Search results for key 3-5");
+        List<Record> results = tree.searchRecords(3, 21);
+
+        if (results.size() == 0) {
+            System.out.println("No records found");
+        }
+
+        for (Record r : results) {
+            System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
+        }
     }
 
     public void print() {
