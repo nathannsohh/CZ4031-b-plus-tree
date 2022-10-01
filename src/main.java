@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.List;
 import java.util.Scanner;
 
 public class main {
@@ -14,6 +15,8 @@ public class main {
 		
 		boolean exit = false;
 		Database db = null;
+		BPTree tree = null;
+
 		while(!exit) {
 			System.out.println("============================Select Byte Size============================");
 			System.out.println("1: Select 200 Bytes");
@@ -25,9 +28,11 @@ public class main {
 			
 			if (choice == 1) {
 				db = new Database(500000000, 200);
+				tree = new BPTree((200 - 8)/(8 + 4));
 				exit = true;
 			} else if (choice == 2) {
 				db = new Database(500000000, 500);
+				tree = new BPTree((500 - 8)/(8 + 4));
 				exit = true;
 			} else {
 				System.out.println("Invalid input");
@@ -72,14 +77,25 @@ public class main {
 				} else if (choice == 2) {
 					System.out.println("\n[Starting experiment 2]\n");
 					
-				
+					tree.printExp2();
+
 				} else if (choice == 3) {
 					System.out.println("\n[Starting experiment 3]\n");
 					
+					List<RecordBlock> results = tree.searchRecords(500, 500);
+
+					tree.printNodesAccessed();
+
+					printSearchStatistics(results);
 					
 				} else if (choice == 4) {
 					System.out.println("\n[Starting experiment 4]\n");
 					
+					List<RecordBlock> results = tree.searchRecords(30000, 40000);
+
+					tree.printNodesAccessed();
+
+					printSearchStatistics(results);
 					
 				} else if (choice == 5) {
 					System.out.println("\n[Starting experiment 5]\n");
@@ -99,6 +115,44 @@ public class main {
 			e.printStackTrace();
 		}
 		
+	}
+
+	private static void printSearchStatistics(List<RecordBlock> results) {
+		int count = 0;
+        int index = 0;
+		int totalRating = 0;
+
+		System.out.printf("Number of data blocks accessed: %d", results.size());
+
+		for (RecordBlock rb: results) {
+			Block block = rb.getBlock();
+			List<Record> RecordList = block.getRecords();
+
+            System.out.printf("Data block content: ");
+
+            for (index = 0; index < RecordList.size() - 1; index++) {
+				Record record = RecordList.get(index);
+                System.out.printf("%d, ", record.getTconst());
+            }
+			Record record = RecordList.get(index);
+            System.out.printf("%d", record.getTconst());
+
+            System.out.println();
+
+            if (count == 5) {
+                break;
+            }
+        }
+
+		for (RecordBlock rb: results) {
+			Record record = rb.getRecord();
+
+			totalRating += record.getAverageRating();
+		}
+
+		int avgRating = totalRating / results.size();
+
+		System.out.printf("Average of 'averageRating's: %f", avgRating);
 	}
 
 }

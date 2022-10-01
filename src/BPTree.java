@@ -309,11 +309,11 @@ public class BPTree {
                 }
         }
 
-        if (removed) {
-            System.out.printf("Key %d removed\n\n", key);
-        } else {
-            System.out.printf("Key %d not found\n\n", key);
-        }
+        // if (removed) {
+        //     System.out.printf("Key %d removed\n\n", key);
+        // } else {
+        //     System.out.printf("Key %d not found\n\n", key);
+        // }
 
         // If leaf node is of valid size
         if (targetNode.numElements() >= minLeafNodeKeys) {
@@ -439,6 +439,9 @@ public class BPTree {
 
 
     public List<RecordBlock> searchRecords(int minKey, int maxKey) {
+        this.searchedNodes.clear();
+        this.accessedBlocks.clear();
+
         List<RecordBlock> records = new ArrayList<>();
 
         // If the tree is not empty
@@ -469,7 +472,7 @@ public class BPTree {
                 if (currentIndex < currentNode.numElements() - 1) {
                     currentIndex += 1;
 
-                    // If at last element, go to next node
+                // If at last element, go to next node
                 } else {
                     currentNode = (LeafNode) currentNode.getNextNode();
                     currentIndex = 0;
@@ -478,6 +481,9 @@ public class BPTree {
                     if (currentNode == null) {
                         return records;
                     }
+
+                    // Add leaf node to searched nodes
+                    this.searchedNodes.add(currentNode);
                 }
                 currentKey = currentNode.getElement(currentIndex);
             }
@@ -523,7 +529,7 @@ public class BPTree {
     
 
 
-    public void printInfoExp2() {
+    public void printExp2() {
         System.out.println("-----Experiment 2-----");
         System.out.printf("n = %d\n", this.order);
         System.out.printf("Number of nodes = %d\n", this.numNodes);
@@ -547,8 +553,31 @@ public class BPTree {
         }
     }
 
-    public void printInfoExp5() {
-        System.out.println("-----Experiment 2-----");
+    public void printNodesAccessed() {
+        int count = 0;
+        int index = 0;
+
+        System.out.printf("Number of index nodes accessed: %d\n", this.searchedNodes.size());
+
+        for (Node node : searchedNodes) {
+
+            System.out.printf("Index node content: ");
+
+            for (index = 0; index < node.numElements() - 1; index++) {
+                System.out.printf("%d, ", node.getElement(index));
+            }
+            System.out.printf("%d", node.getElement(index));
+
+            System.out.println();
+
+            if (count == 5) {
+                break;
+            }
+        }
+    }
+
+    public void printExp5() {
+        System.out.println("-----Experiment 5-----");
         System.out.printf("Number of deleted nodes = %d\n", this.delNodes);
         System.out.printf("Number of nodes = %d\n", this.numNodes);
         System.out.printf("Height of tree = %d\n", this.height);
@@ -606,7 +635,7 @@ public class BPTree {
             tree.print();
             System.out.println();
 
-            tree.printInfoExp2();
+            tree.printExp2();
 
             System.out.println("Search results for key 3-22");
             List<RecordBlock> results = tree.searchRecords(3, 22);
@@ -648,10 +677,10 @@ public class BPTree {
             tree.print();
             System.out.println();
 
-            tree.printInfoExp5();
+            tree.printExp5();
 
-            System.out.println("Search results for key 3-22");
-            List<RecordBlock> results = tree.searchRecords(3, 22);
+            System.out.println("Search results for key 3-8");
+            List<RecordBlock> results = tree.searchRecords(3, 8);
 
             if (results.size() == 0) {
                 System.out.println("No records found");
@@ -661,6 +690,8 @@ public class BPTree {
                 Record r = rb.getRecord();
                 System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
             }
+
+            tree.printNodesAccessed();
         }
     }
 
