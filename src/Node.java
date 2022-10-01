@@ -10,7 +10,7 @@ public class Node {
     }
 
     public List<Integer> getElements() {
-        return elements;
+        return this.elements;
     }
 
     public void setElements(List<Integer> elements) {
@@ -26,7 +26,7 @@ public class Node {
     }
 
     public void addElement(int index, int element) {
-        elements.add(index, element);
+        this.elements.add(index, element);
     }
 
     public int removeElement(int index) {

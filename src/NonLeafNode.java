@@ -14,7 +14,7 @@ public class NonLeafNode extends Node {
     }
 
     public List<Node> getChildren() {
-        return children;
+        return this.children;
     }
 
     public void setChildren(List<Node> children) {

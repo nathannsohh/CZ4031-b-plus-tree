@@ -42,7 +42,7 @@ public class LeafNode extends Node{
     }
 
     public List<List<Record>> getRecords() {
-        return records;
+        return this.records;
     }
 
     public void setRecords(List<List<Record>> records) {
@@ -62,7 +62,7 @@ public class LeafNode extends Node{
     }
 
     public Node getNextNode() {
-        return nextNode;
+        return this.nextNode;
     }
 
     public void setNextNode(Node nextNode) {
@@ -78,11 +78,11 @@ public class LeafNode extends Node{
     }
 
     public Node getPreNode(){
-        return prevNode;
+        return this.prevNode;
     }
 
     public NonLeafNode getParentNode(){
-        return parentNode;
+        return this.parentNode;
     }
 
 

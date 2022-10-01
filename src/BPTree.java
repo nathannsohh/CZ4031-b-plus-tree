@@ -11,15 +11,17 @@ public class BPTree {
     private int numNodes;
     // height of tree
     private int height;
+    // number of deleted nodes
+    private int delNodes;
 
     private int BlockAccess=0;
-    private int deletedNode=0;
 
     public BPTree(int order) {
         this.root = null;
         this.order = order;
         this.numNodes = 0;
         this.height = 0;
+        this.delNodes = 0;
     }
 
 
@@ -272,8 +274,10 @@ public class BPTree {
 
 
 
-    public void deleteKey(int Key) {
-        // CODE TO DELETE KEY
+    public void deleteKey(int key) {
+
+        boolean removed = false;
+        int index = 0;
         
         Node cur = this.root;
 
@@ -287,36 +291,44 @@ public class BPTree {
         int minLeafNodeKeys = (int)Math.floor(order/2);
 
         //iteration 1
-
-        //while there are nodes that contain the key value
-        while(findLeafNode(root, Key)!=null){
-        
-        //find if the leaf node with the key
-        LeafNode target = findLeafNode(root, Key);
+            
+        //find the leaf node with the key
+        LeafNode target = findLeafNode(root, key);
         
         //get all keys in target node
         List<Integer> elements = target.getElements();
 
-        // Find bucket containing key
-        for (int i = 0; i < elements.size(); i++) {
+        //find key in elements
+        for (index = 0; index < elements.size(); index++) {
+
             //if key value is the same as the element value, remove
-            if (Key == elements.get(i)) {
-                System.out.println("Removed");
-                elements.remove(i); // remove from the element list
-                target.removeElement(i); 
-                target.removeSameKeyRecords(i);
+            if (key == elements.get(index)) {
+
+                //remove from the element list
+                target.removeElement(index); 
+                target.removeSameKeyRecords(index);
+                removed = true;
+                break;
                 }
         }
 
-        //instance - key was removed from the first index of the node
-        if(elements.size()>=minLeafNodeKeys){
-            //if key was removed at the first index, update the parent node
-            int newKey = elements.get(0);
-            updateParent(Key, newKey, Key);
+        if (removed) {
+            System.out.printf("Key %d removed\n\n", key);
+        } else {
+            System.out.printf("Key %d not found\n\n", key);
         }
 
+        //if leaf node is of valid size
+        if(target.numElements() >= minLeafNodeKeys){
+
+            //if key was removed at the first index, update the parent node
+            if (index == 0) {
+                int newKey = target.getElement(0);
+                updateParent(key, newKey, key);
+            }
+
         //instance - size of current node is less than minLeafNode
-            else{
+        } else {
             LeafNode prev = (LeafNode) target.getPreNode();
             LeafNode next = (LeafNode) target.getNextNode();
 
@@ -337,7 +349,7 @@ public class BPTree {
                 }
                 int newKey = elements.get(0);
                 //update the parent node
-                updateParent(firstKey, newKey, Key);
+                updateParent(firstKey, newKey, key);
             }
 
              //else check with the right sibling... if ok proceed
@@ -356,7 +368,7 @@ public class BPTree {
                 }
                 int newKey = elements.get(0);
                 //update the parent node
-                updateParent(firstKey, newKey, Key);
+                updateParent(firstKey, newKey, key);
             }
 
             //cannot borrow from siblings
@@ -372,7 +384,7 @@ public class BPTree {
                         elements.remove(0);
                         target.removeElement(0);
                     }
-                    updateParent(firstKey, -1 , Key);
+                    updateParent(firstKey, -1 , key);
                 }
 
                 //merge with right node, delete target node and update parent
@@ -387,39 +399,43 @@ public class BPTree {
                         }
                     }
                 }
-                deletedNode++;
+                this.delNodes += 1;
             }
             
 
         }
     }
-    }
 
-    //oldKey - previous key the index 0 of leaf node
+    //oldKey - previous key at index 0 of leaf node
     //newKey - new key at index 0 of leaf node
     //targetKey - key that was removed
-    public void updateParent(int oldKey , int newKey , int targetKey){
+    public void updateParent(int oldKey, int newKey, int targetKey) {
         Node node = root;
-        NonLeafNode currentNode = (NonLeafNode)node;
+        NonLeafNode currentNode = null;
 
-        int min = -1;
+        int childIndex = -1;
 
-        while(currentNode instanceof NonLeafNode){
-            for(int index=0; index<node.numElements(); index++){
-                if(node.getElement(index) <= newKey)
-                    min=index;
+        while (node instanceof NonLeafNode) {
+            currentNode = (NonLeafNode)node;
+
+            for (int index = 0; index < node.numElements(); index++) {
+
+                if (newKey <= node.getElement(index)) {
+                    childIndex=index;
+                }
                 
-                //find the key in the node
-                if(node.getElement(index) == targetKey || node.getElement(index) == oldKey){
-                    if(newKey==-1){
+                //find key in current node
+                if (node.getElement(index) == targetKey || node.getElement(index) == oldKey) {
+                    if (newKey==-1) { //?
                         node.removeElement(index);
                     }
-                    node.addElement(index+1, newKey);
                     node.removeElement(index);
+                    node.addElement(index, newKey);
                 }
             }
-            //not found in current node, go to child node
-            currentNode = (NonLeafNode)currentNode.getChild(min);
+
+            //find key in child node
+            node = currentNode.getChild(childIndex);
         }
     }
 
@@ -535,6 +551,30 @@ public class BPTree {
         }
     }
 
+    public void printInfoExp5() {
+        System.out.println("-----Experiment 2-----");
+        System.out.printf("Number of deleted nodes = %d\n", this.delNodes);
+        System.out.printf("Number of nodes = %d\n", this.numNodes);
+        System.out.printf("Height of tree = %d\n", this.height);
+        System.out.println();
+
+        System.out.println("Content of root node");
+        for (int element : this.root.getElements()) {
+            System.out.printf("%d ", element);
+        }
+        System.out.println("\n");
+        
+        if (this.root instanceof NonLeafNode) {
+            System.out.println("Content of first child node");
+            for (int element : ((NonLeafNode)this.root).getChild(0).getElements()) {
+                System.out.printf("%d ", element);
+            }
+            System.out.println("\n");
+        } else {
+            System.out.println("There is no child node");
+        }
+    }
+
 
 
     /* --------------------------- TESTING --------------------------- */
@@ -542,10 +582,11 @@ public class BPTree {
 
 
     public static void main(String[] args) {
-        boolean test1 = false;
-        boolean test2 = true;
+        int testSearchAndDuplicate = 0;
+        int testExp2 = 0;
+        int testDelete = 1;
 
-        if (test1) {
+        if (testSearchAndDuplicate == 1) {
             BPTree tree = new BPTree(3);
 
             tree.insertKey(1, new Record("1", 1, 1));
@@ -582,7 +623,7 @@ public class BPTree {
             }
         }
 
-        if (test2) {
+        if (testExp2 == 1) {
             BPTree tree = new BPTree(3);
 
             tree.insertKey(1, new Record("1", 1, 1));
@@ -608,6 +649,34 @@ public class BPTree {
             System.out.println();
 
             tree.printInfoExp2();
+        }
+
+        if (testDelete == 1) {
+            BPTree tree = new BPTree(3);
+
+            tree.insertKey(1, new Record("1", 1, 1));
+            tree.insertKey(4, new Record("4", 4, 4));
+            tree.insertKey(7, new Record("7", 7, 7));
+            tree.insertKey(10, new Record("10", 10, 10));
+            tree.insertKey(17, new Record("17", 17, 17));
+            tree.insertKey(19, new Record("19", 19, 19));
+            tree.insertKey(20, new Record("20", 20, 20));
+            tree.insertKey(21, new Record("21", 21, 21));
+            tree.insertKey(31, new Record("31", 31, 31));
+            tree.insertKey(25, new Record("25", 25, 25));
+            tree.insertKey(5, new Record("5", 5, 5));
+
+            tree.insertKey(18, new Record("18", 18, 18));
+
+            tree.print();
+            System.out.println();
+
+            tree.deleteKey(17);
+
+            tree.print();
+            System.out.println();
+
+            tree.printInfoExp5();
         }
     }
 
