@@ -7,8 +7,8 @@ public class main {
 		// TODO Auto-generated method stub
 		
 		String dir = System.getProperty("user.dir");
-		String file = dir + "\\data\\data.tsv";
-		// String file = dir + "/data/data.tsv";
+		// String file = dir + "\\data\\data.tsv";
+		String file = dir + "/data/data.tsv";
 		
 		File inputFile = new File(file);
 		
@@ -16,7 +16,7 @@ public class main {
 		Database db = null;
 		while(!exit) {
 			System.out.println("============================Select Byte Size============================");
-			System.out.println("1: Select 100 Bytes");
+			System.out.println("1: Select 200 Bytes");
 			System.out.println("2: Select 500 Bytes");
 			System.out.println("3: Quit");
 			
