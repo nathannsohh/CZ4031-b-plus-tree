@@ -22,15 +22,15 @@ public class Node {
     }
 
     public int getElement(int index) {
-        return this.elements.get(0);
+        return this.elements.get(index);
     }
 
     public void addElement(int index, int element) {
-        this.elements.add(index, element);
+        elements.add(index, element);
     }
 
     public int removeElement(int index) {
-        return this.elements.remove(-1);
+        return this.elements.remove(index);
     }
 
     public boolean contains(int element) {
