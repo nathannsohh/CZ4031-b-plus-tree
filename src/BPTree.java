@@ -381,9 +381,10 @@ public class BPTree {
                 updateParent(borrowedKey, newKey, borrowedKey);
 
             // Cannot borrow key from sibling nodes
-            // } else {
+             } else {
             //     //if merging, less than equals to the order value
             //     //merge with left node, delete target node and update parent
+            //
             //     if(prev.numElements()==minInternalNodeKeys){
             //         int firstKey = elements.get(0);
             //         for (int i=0; i<elements.size();i++){
@@ -408,7 +409,7 @@ public class BPTree {
             //             }
             //         }
             //     }
-            //     this.delNodes += 1;
+              this.delNodes += 1;
             }
         }
     }
