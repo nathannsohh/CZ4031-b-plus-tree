@@ -6,13 +6,11 @@ public class LeafNode extends Node{
     private List<List<RecordBlock>> records;
     private Node prevNode;
     private Node nextNode;
-    private NonLeafNode parentNode;
 
     public LeafNode() {
         this.records = new ArrayList<>();
         this.nextNode = null;
         this.prevNode = null;
-        this.parentNode = null;
     }
 
     public int numKeyRecordEntries() {
@@ -78,13 +76,5 @@ public class LeafNode extends Node{
 
     public void setPrevNode(Node prevNode){
         this.prevNode = prevNode;
-    }
-
-    public NonLeafNode getParentNode(){
-        return this.parentNode;
-    }
-
-    public void setParentNode(NonLeafNode parentNode){
-        this.parentNode = parentNode;
     }
 }

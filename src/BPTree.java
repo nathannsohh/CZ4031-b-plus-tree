@@ -52,6 +52,10 @@ public class BPTree {
                 newRoot.addElement(0, newPair.getKey());
                 newRoot.addChild(1, newPair.getNode());
 
+                // Update parent node
+                root.setParentNode(newRoot);
+                newPair.getNode().setParentNode(newRoot);
+
                 // Set as new root
                 this.root = newRoot;
 
@@ -220,6 +224,9 @@ public class BPTree {
         currentNode.setChildren(firstChildrenList);
         newNode.setChildren(secondChildrenList);
 
+        // Update Parent Node
+        newNode.setParentNode(currentNode.getParentNode());
+
         // Return the new node and its corresponding key as a (key, node) pair
         return upperPair;
     }
@@ -279,6 +286,9 @@ public class BPTree {
         // Set nextNode for currentNode
         currentNode.setNextNode(newNode);
 
+        // Update Parent Node
+        newNode.setParentNode(currentNode.getParentNode());
+
         // Return the new node and its corresponding key as a (key, node) pair
         return (new KeyNodePair(newNode.getElement(0), newNode));
     }
@@ -317,12 +327,6 @@ public class BPTree {
                 break;
                 }
         }
-
-        // if (removed) {
-        //     System.out.printf("Key %d removed\n\n", key);
-        // } else {
-        //     System.out.printf("Key %d not found\n\n", key);
-        // }
 
         // If leaf node is of valid size
         if (targetNode.numElements() >= minLeafNodeKeys) {
