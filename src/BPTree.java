@@ -3,15 +3,22 @@ import java.util.ArrayList;
 
 public class BPTree {
 
-    private int order;
     private Node root;
+
+    // parameter n
+    private int order;
+    // number of nodes
+    private int numNodes;
+    // height of tree
     private int height;
+
     private int BlockAccess=0;
     private int deletedNode=0;
 
     public BPTree(int order) {
-        this.order = order;
         this.root = null;
+        this.order = order;
+        this.numNodes = 0;
         this.height = 0;
     }
 
@@ -41,6 +48,12 @@ public class BPTree {
 
                 // Set as new root
                 this.root = newRoot;
+
+                // Increase numNodes
+                this.numNodes += 1;
+
+                // Increase height
+                this.height += 1;
             }
 
         // When the tree is empty
@@ -54,6 +67,12 @@ public class BPTree {
             node.addElement(0, key);
             node.createRecordList(0);
             node.addRecord(0, record);
+
+            // Increase numNodes
+            this.numNodes += 1;
+
+            // Increase height
+            this.height += 1;
         }
     }
 
@@ -99,6 +118,9 @@ public class BPTree {
 
                     // Create new internal node
                     upperPair = createInternalNode(currentNode, index, newPair);
+
+                    // Increase numNodes
+                    this.numNodes += 1;
                 }
             }
 
@@ -109,7 +131,7 @@ public class BPTree {
 
             // Find the location to insert the key
             for (index = 0; index < currentNode.numElements(); index++) {
-                if (key < currentNode.getElement(index)) {
+                if (key <= currentNode.getElement(index)) {
                     break;
                 }
             }
@@ -132,6 +154,9 @@ public class BPTree {
 
                 // Create new leaf node
                 upperPair = createLeafNode(currentNode);
+
+                // Increase numNodes
+                this.numNodes += 1;
             }
         }
 
@@ -480,41 +505,109 @@ public class BPTree {
         return (LeafNode)node;
     }
 
+
+
+    /* --------------------------- PRINT INFO --------------------------- */
     
+
+
+    public void printInfoExp2() {
+        System.out.println("-----Experiment 2-----");
+        System.out.printf("n = %d\n", this.order);
+        System.out.printf("Number of nodes = %d\n", this.numNodes);
+        System.out.printf("Height of tree = %d\n", this.height);
+        System.out.println();
+
+        System.out.println("Content of root node");
+        for (int element : this.root.getElements()) {
+            System.out.printf("%d ", element);
+        }
+        System.out.println("\n");
+        
+        if (this.root instanceof NonLeafNode) {
+            System.out.println("Content of first child node");
+            for (int element : ((NonLeafNode)this.root).getChild(0).getElements()) {
+                System.out.printf("%d ", element);
+            }
+            System.out.println("\n");
+        } else {
+            System.out.println("There is no child node");
+        }
+    }
+
+
 
     /* --------------------------- TESTING --------------------------- */
 
 
 
     public static void main(String[] args) {
-        BPTree tree = new BPTree(3);
+        boolean test1 = false;
+        boolean test2 = true;
 
-        tree.insertKey(1, new Record("1", 1, 1));
-        tree.insertKey(4, new Record("4", 4, 4));
-        tree.insertKey(7, new Record("7", 7, 7));
-        tree.insertKey(10, new Record("10", 10, 10));
-        tree.insertKey(17, new Record("17", 17, 17));
-        tree.insertKey(21, new Record("21", 21, 21));
-        tree.insertKey(31, new Record("31", 31, 31));
-        tree.insertKey(25, new Record("25", 25, 25));
-        tree.insertKey(19, new Record("19", 19, 19));
-        tree.insertKey(20, new Record("20", 20, 20));
-        tree.insertKey(28, new Record("28", 28, 28));
-        tree.insertKey(42, new Record("42", 42, 42));
+        if (test1) {
+            BPTree tree = new BPTree(3);
 
-        tree.print();
+            tree.insertKey(1, new Record("1", 1, 1));
+            tree.insertKey(4, new Record("4", 4, 4));
+            tree.insertKey(7, new Record("7", 7, 7));
+            tree.insertKey(10, new Record("10", 10, 10));
+            tree.insertKey(17, new Record("17", 17, 17));
+            tree.insertKey(21, new Record("21", 21, 21));
+            tree.insertKey(31, new Record("31", 31, 31));
+            tree.insertKey(25, new Record("25", 25, 25));
+            tree.insertKey(19, new Record("19", 19, 19));
+            tree.insertKey(20, new Record("20", 20, 20));
+            tree.insertKey(28, new Record("28", 28, 28));
+            tree.insertKey(42, new Record("42", 42, 42));
+            tree.insertKey(21, new Record("21A", 21, 21));
+            tree.insertKey(21, new Record("21B", 21, 21));
+            tree.insertKey(21, new Record("21C", 21, 21));
+            tree.insertKey(4, new Record("4A", 4, 4));
+            tree.insertKey(10, new Record("10A", 10, 10));
+            tree.insertKey(19, new Record("19A", 19, 19));
 
-        System.out.println();
+            tree.print();
+            System.out.println();
 
-        System.out.println("Search results for key 3-5");
-        List<Record> results = tree.searchRecords(3, 21);
+            System.out.println("Search results for key 3-22");
+            List<Record> results = tree.searchRecords(3, 22);
 
-        if (results.size() == 0) {
-            System.out.println("No records found");
+            if (results.size() == 0) {
+                System.out.println("No records found");
+            }
+
+            for (Record r : results) {
+                System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
+            }
         }
 
-        for (Record r : results) {
-            System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
+        if (test2) {
+            BPTree tree = new BPTree(3);
+
+            tree.insertKey(1, new Record("1", 1, 1));
+            tree.insertKey(4, new Record("4", 4, 4));
+            tree.insertKey(7, new Record("7", 7, 7));
+            tree.insertKey(10, new Record("10", 10, 10));
+            tree.insertKey(17, new Record("17", 17, 17));
+            tree.insertKey(21, new Record("21", 21, 21));
+            tree.insertKey(31, new Record("31", 31, 31));
+            tree.insertKey(25, new Record("25", 25, 25));
+            tree.insertKey(19, new Record("19", 19, 19));
+            tree.insertKey(20, new Record("20", 20, 20));
+            tree.insertKey(28, new Record("28", 28, 28));
+            tree.insertKey(42, new Record("42", 42, 42));
+            tree.insertKey(21, new Record("21A", 21, 21));
+            tree.insertKey(21, new Record("21B", 21, 21));
+            tree.insertKey(21, new Record("21C", 21, 21));
+            tree.insertKey(4, new Record("4A", 4, 4));
+            tree.insertKey(10, new Record("10A", 10, 10));
+            tree.insertKey(19, new Record("19A", 19, 19));
+
+            tree.print();
+            System.out.println();
+
+            tree.printInfoExp2();
         }
     }
 
