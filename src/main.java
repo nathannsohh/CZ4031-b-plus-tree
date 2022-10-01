@@ -8,8 +8,8 @@ public class main {
 		// TODO Auto-generated method stub
 		
 		String dir = System.getProperty("user.dir");
-		String file = dir + "\\data\\data.tsv";
-		// String file = dir + "/data/data.tsv";
+		// String file = dir + "\\data\\data.tsv";
+		String file = dir + "/data/data.tsv";
 		
 		File inputFile = new File(file);
 		
@@ -90,6 +90,8 @@ public class main {
 
 					tree.printNodesAccessed();
 
+					System.out.println();
+
 					printSearchStatistics(results);
 					
 				} else if (choice == 4) {
@@ -98,6 +100,8 @@ public class main {
 					List<RecordBlock> results = tree.searchRecords(30000, 40000);
 
 					tree.printNodesAccessed();
+
+					System.out.println();
 
 					printSearchStatistics(results);
 					
@@ -124,10 +128,9 @@ public class main {
 	private static void printSearchStatistics(List<RecordBlock> results) {
 		int count = 0;
         int index = 0;
-		int totalRating = 0;
+		float totalRating = 0;
 
-		System.out.printf("Number of data blocks accessed: %d", results.size());
-		System.out.println();
+		System.out.printf("Number of data blocks accessed: %d\n\n", results.size());
 
 		for (RecordBlock rb: results) {
 			Block block = rb.getBlock();
@@ -149,15 +152,17 @@ public class main {
             }
         }
 
+		System.out.println();
+
 		for (RecordBlock rb: results) {
 			Record record = rb.getRecord();
 
 			totalRating += record.getAverageRating();
 		}
 
-		int avgRating = totalRating / results.size();
+		float avgRating = totalRating / results.size();
 
-		System.out.printf("Average of 'averageRating's: %d", avgRating);
+		System.out.printf("Average of 'averageRating's: %f\n\n", avgRating);
 	}
 
 }

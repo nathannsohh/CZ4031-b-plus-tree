@@ -264,8 +264,19 @@ public class BPTree {
         currentNode.setRecords(firstRecordsList);
         newNode.setRecords(secondRecordsList);
 
-        // Set Next Nodes
+        // Set prevNode for nextNode
+        LeafNode nextNode = (LeafNode)currentNode.getNextNode();
+        if (nextNode != null) {
+            nextNode.setPrevNode(newNode);
+        }
+
+        // Set nextNode for newNode
         newNode.setNextNode(currentNode.getNextNode());
+
+        // Set prevNode for newNode
+        newNode.setPrevNode(currentNode);
+
+        // Set nextNode for currentNode
         currentNode.setNextNode(newNode);
 
         // Return the new node and its corresponding key as a (key, node) pair
@@ -280,7 +291,6 @@ public class BPTree {
 
     public void deleteKey(int key) {
 
-        boolean removed = false;
         int index = 0;
 
         // Minimum number of keys in a Non-Leaf Node
@@ -304,7 +314,6 @@ public class BPTree {
                 // Remove from the element list
                 targetNode.removeElement(index); 
                 targetNode.removeSameKeyRecords(index);
-                removed = true;
                 break;
                 }
         }
@@ -325,76 +334,77 @@ public class BPTree {
             }
 
         // If size of target node is less than minLeafNode
-        // } else {
-        //     LeafNode prev = (LeafNode) targetNode.getPrevNode();
-        //     LeafNode next = (LeafNode) targetNode.getNextNode();
+        } else {
+            LeafNode prev = (LeafNode) targetNode.getPrevNode();
+            LeafNode next = (LeafNode) targetNode.getNextNode();
 
-        //     // If size of left sibling node > minimum number of keys
-        //     if (prev.numElements() > minLeafNodeKeys) {
+            if (prev == null) System.out.println("prev is null");
+            if (next == null) System.out.println("next is null");
 
-        //         // Borrow a key from left sibling node
-        //         int borrowedKey = prev.removeElement(-1);
-        //         List<Record> borrowedRecord = prev.removeSameKeyRecords(-1);
+            // If size of left sibling node > minimum number of keys
+            if (prev != null && prev.numElements() > minLeafNodeKeys) {
 
-        //         // Insert borrowed key into target node
-        //         targetNode.addElement(0, borrowedKey);
-        //         targetNode.createRecordList(0);
-        //         targetNode.addSameKeyRecords(0, borrowedRecord);
+                // Borrow a key from left sibling node
+                int prevSize = prev.numElements();
+                int borrowedKey = prev.removeElement(prevSize-1);
+                List<RecordBlock> borrowedRecord = prev.removeSameKeyRecords(prevSize-1);
 
-        //         int newKey = targetNode.getElement(0);
-        //         //update the parent node
-        //         updateParent(firstKey, newKey, key);
+                // Insert borrowed key into target node
+                targetNode.addElement(0, borrowedKey);
+                targetNode.addSameKeyRecords(0, borrowedRecord);
 
-        //     // If size of right sibling node > minimum number of keys
-        //     } else if (next.numElements() > minLeafNodeKeys) {
+                int newKey = targetNode.getElement(0);
 
-        //         // Borrow a key from right sibling node
-        //         int firstKey = next.getElements().get(0);
-        //         int keyMidpoint = (int)Math.floor((next.getElements().size() + elements.size()) / 2);
-        //         int nextSize = next.getElements().size();
+                // Update the parent node
+                updateParent(key, newKey, key);
 
-        //         for(int i=0; i<(keyMidpoint-nextSize) ; i++){
-        //             //balance out the sibling nodes
-        //             next.addElement(0, elements.get(i));
-        //             targetNode.removeElement(i);
-        //             elements.remove(i);
-        //             //proceed to adjust the parent node
-        //             //move upwards to find the parent with the old key, update the key
-        //         }
-        //         int newKey = elements.get(0);
-        //         //update the parent node
-        //         updateParent(firstKey, newKey, key);
+            // If size of right sibling node > minimum number of keys
+            } else if (next != null && next.numElements() > minLeafNodeKeys) {
 
-        //     // Cannot borrow key from sibling nodes
-        //     } else {
-        //         //if merging, less than equals to the order value
-        //         //merge with left node, delete target node and update parent
-        //         if(prev.numElements()==minInternalNodeKeys){
-        //             int firstKey = elements.get(0);
-        //             for (int i=0; i<elements.size();i++){
-        //                 //add the key into the previous node
-        //                 prev.addElement(prev.numElements(),elements.get(i));
-        //                 //remove key from the target node
-        //                 elements.remove(0);
-        //                 targetNode.removeElement(0);
-        //             }
-        //             updateParent(firstKey, -1 , key);
-        //         }
+                // Borrow a key from right sibling node
+                int targetSize = targetNode.numElements();
+                int borrowedKey = next.removeElement(0);
+                List<RecordBlock> borrowedRecord = prev.removeSameKeyRecords(0);
 
-        //         //merge with right node, delete target node and update parent
-        //         else{
-        //             if(prev.numElements()==minInternalNodeKeys){
-        //                 for (int i=0; i<elements.size();i++){
-        //                     //add the key into the previous node
-        //                     prev.addElement(prev.numElements(),elements.get(i));
-        //                     //remove key from the target node
-        //                     elements.remove(0);
-        //                     targetNode.removeElement(0);
-        //                 }
-        //             }
-        //         }
-        //         this.delNodes += 1;
-        //     }
+                // Insert borrowed key into target node
+                targetNode.addElement(targetSize, borrowedKey);
+                targetNode.addSameKeyRecords(targetSize, borrowedRecord);
+
+                int newKey = next.getElement(0);
+
+                // Update the parent node
+                updateParent(borrowedKey, newKey, borrowedKey);
+
+            // Cannot borrow key from sibling nodes
+            // } else {
+            //     //if merging, less than equals to the order value
+            //     //merge with left node, delete target node and update parent
+            //     if(prev.numElements()==minInternalNodeKeys){
+            //         int firstKey = elements.get(0);
+            //         for (int i=0; i<elements.size();i++){
+            //             //add the key into the previous node
+            //             prev.addElement(prev.numElements(),elements.get(i));
+            //             //remove key from the target node
+            //             elements.remove(0);
+            //             targetNode.removeElement(0);
+            //         }
+            //         updateParent(firstKey, -1 , key);
+            //     }
+
+            //     //merge with right node, delete target node and update parent
+            //     else{
+            //         if(prev.numElements()==minInternalNodeKeys){
+            //             for (int i=0; i<elements.size();i++){
+            //                 //add the key into the previous node
+            //                 prev.addElement(prev.numElements(),elements.get(i));
+            //                 //remove key from the target node
+            //                 elements.remove(0);
+            //                 targetNode.removeElement(0);
+            //             }
+            //         }
+            //     }
+            //     this.delNodes += 1;
+            }
         }
     }
 
@@ -406,22 +416,31 @@ public class BPTree {
         NonLeafNode currentNode = null;
 
         int childIndex = -1;
+        int index = 0;
 
         while (node instanceof NonLeafNode) {
             currentNode = (NonLeafNode)node;
 
-            for (int index = 0; index < node.numElements(); index++) {
+            // Find index of child node containing oldKey
+            for (index = 0; index < node.numElements(); index++) {
 
-                // Find index of child node containing oldKey
-                if (oldKey <= node.getElement(index)) {
-                    childIndex=index;
+                if (oldKey < node.getElement(index)) {
+                    childIndex = index;
+                    break;
                 }
-                
-                // Find oldKey in current node
+            }
+
+            // If not found, use last child node
+            if (childIndex == -1) {
+                childIndex = index;
+            }
+            
+            // Find oldKey in current node
+            for (index = 0; index < node.numElements(); index++) {
+
+                // If found, replace oldKey with newKey
                 if (node.getElement(index) == targetKey || node.getElement(index) == oldKey) {
-                    if (newKey==-1) { //?
-                        node.removeElement(index);
-                    }
+
                     node.removeElement(index);
                     node.addElement(index, newKey);
                 }
@@ -530,7 +549,7 @@ public class BPTree {
 
 
     public void printExp2() {
-        System.out.println("-----Experiment 2-----");
+        // System.out.println("-----Experiment 2-----");
         System.out.printf("n = %d\n", this.order);
         System.out.printf("Number of nodes = %d\n", this.numNodes);
         System.out.printf("Height of tree = %d\n", this.height);
@@ -557,7 +576,7 @@ public class BPTree {
         int count = 0;
         int index = 0;
 
-        System.out.printf("Number of index nodes accessed: %d\n", this.searchedNodes.size());
+        System.out.printf("Number of index nodes accessed: %d\n\n", this.searchedNodes.size());
 
         for (Node node : searchedNodes) {
 
@@ -666,8 +685,18 @@ public class BPTree {
             tree.insertKey(25, new RecordBlock(new Record("25", 25, 25), null));
             tree.insertKey(5, new RecordBlock(new Record("5", 5, 5), null));
 
-            tree.insertKey(23, new RecordBlock(new Record("23", 23, 23), null));
-            tree.insertKey(20, new RecordBlock(new Record("20A", 20, 20), null));
+            tree.insertKey(30, new RecordBlock(new Record("30", 30, 30), null));
+            tree.insertKey(22, new RecordBlock(new Record("22", 22, 22), null));
+
+            tree.print();
+            System.out.println();
+
+            tree.deleteKey(7);
+
+            tree.print();
+            System.out.println();
+
+            tree.deleteKey(25);
 
             tree.print();
             System.out.println();
@@ -679,19 +708,19 @@ public class BPTree {
 
             tree.printExp5();
 
-            System.out.println("Search results for key 3-8");
-            List<RecordBlock> results = tree.searchRecords(3, 8);
+            // System.out.println("Search results for key 3-8");
+            // List<RecordBlock> results = tree.searchRecords(3, 8);
 
-            if (results.size() == 0) {
-                System.out.println("No records found");
-            }
+            // if (results.size() == 0) {
+            //     System.out.println("No records found");
+            // }
 
-            for (RecordBlock rb : results) {
-                Record r = rb.getRecord();
-                System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
-            }
+            // for (RecordBlock rb : results) {
+            //     Record r = rb.getRecord();
+            //     System.out.printf("%s %f %d\n", r.getTconst(), r.getAverageRating(), r.getNumVotes());
+            // }
 
-            tree.printNodesAccessed();
+            // tree.printNodesAccessed();
         }
     }
 
