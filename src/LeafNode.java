@@ -3,10 +3,9 @@ import java.util.ArrayList;
 
 public class LeafNode extends Node{
     // List of Pointers to Records
-    private List<List<Record>> records;
-    private Node nextNode;
-    //prevNode are nodes of same height
+    private List<List<RecordBlock>> records;
     private Node prevNode;
+    private Node nextNode;
     private NonLeafNode parentNode;
 
     public LeafNode() {
@@ -22,7 +21,7 @@ public class LeafNode extends Node{
 
     public int totalRecords() {
         int total = 0;
-        for (List<Record> sameKeyRecords : records) {
+        for (List<RecordBlock> sameKeyRecords : records) {
             total += sameKeyRecords.size();
         }
         return total;
@@ -32,20 +31,20 @@ public class LeafNode extends Node{
         return this.records.get(index).size();
     }
 
-    public void addRecord(int index, Record record) {
+    public void addRecord(int index, RecordBlock record) {
         this.records.get(index).add(record);
     }
     
-    public void removeRecord(int index, Record record) {
+    public void removeRecord(int index, RecordBlock record) {
         this.records.get(index).remove(record);
         // Missing check for empty list of sameKeyRecords
     }
 
-    public List<List<Record>> getRecords() {
+    public List<List<RecordBlock>> getRecords() {
         return this.records;
     }
 
-    public void setRecords(List<List<Record>> records) {
+    public void setRecords(List<List<RecordBlock>> records) {
         this.records = records;
     }
 
@@ -53,11 +52,15 @@ public class LeafNode extends Node{
         this.records.add(index, new ArrayList<>());
     }
 
-    public List<Record> getSameKeyRecords(int index) {
+    public List<RecordBlock> getSameKeyRecords(int index) {
         return this.records.get(index);
     }
 
-    public List<Record> removeSameKeyRecords(int index) {
+    public void addSameKeyRecords(int index, List<RecordBlock> recordsList) {
+        this.records.add(index, recordsList);
+    }
+
+    public List<RecordBlock> removeSameKeyRecords(int index) {
         return this.records.remove(index);
     }
 
@@ -69,21 +72,19 @@ public class LeafNode extends Node{
         this.nextNode = nextNode;
     }
 
+    public Node getPrevNode(){
+        return this.prevNode;
+    }
+
     public void setPrevNode(Node prevNode){
         this.prevNode = prevNode;
-    }
-
-    public void setParentNode(NonLeafNode parentNode){
-        this.parentNode = parentNode;
-    }
-
-    public Node getPreNode(){
-        return this.prevNode;
     }
 
     public NonLeafNode getParentNode(){
         return this.parentNode;
     }
 
-
+    public void setParentNode(NonLeafNode parentNode){
+        this.parentNode = parentNode;
+    }
 }
