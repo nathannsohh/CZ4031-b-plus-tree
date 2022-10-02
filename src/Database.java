@@ -68,6 +68,10 @@ public class Database {
         }
     }
 
+    public Block getBlock(){
+        return this.blk;
+    }
+
     public boolean deleteRecord(Record rec) {
         if (totalNumRecords <= 0) {
             System.out.println("DATABASE IS EMPTY");
@@ -95,8 +99,9 @@ public class Database {
             numBlksRemaining--;
         }
 
-        System.out.println("Total Memory Size: " + poolSize + " bytes");
-        System.out.println("Total Size Used: " + totalNumRecords*recordSize + " bytes");
+
+        System.out.println("Total Memory Size: " + (float) poolSize/Math.pow(10, 6) + " MB");
+        System.out.println("Size of Database: " + (float) (totalNumRecords*recordSize)/Math.pow(10, 6) + " MB");
         System.out.println("Block Size: " + blkSize + " bytes");
         System.out.println("Record Size: " + recordSize + " bytes");
         System.out.println("Number of Blocks Allocated: " + numBlksAllocated + " blocks");
