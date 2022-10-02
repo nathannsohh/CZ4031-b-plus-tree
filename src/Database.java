@@ -32,8 +32,8 @@ public class Database {
         this.blkSize = blkSize;
         this.numAllocatedBlk = 0;
         this.numRemainingBlk = poolSize/blkSize;
-        this.recordSize = (Float.SIZE / 8) + (Integer.SIZE / 8) + 10;
-        this.recordsPerBlk = (int) Math.floor(blkSize/((Float.SIZE / 8) + (Integer.SIZE / 8) + 10));
+        this.recordSize = (Float.SIZE / 8) + (Integer.SIZE / 8) + 9;
+        this.recordsPerBlk = (int) Math.floor(blkSize/((Float.SIZE / 8) + (Integer.SIZE / 8) + 9));
         this.blk = new Block();
         this.blkList = new ArrayList<Block>();
     }
@@ -99,8 +99,8 @@ public class Database {
             numBlksRemaining--;
         }
 
-        System.out.println("Total Memory Size: " + poolSize + " bytes");
-        System.out.println("Total Size Used: " + totalNumRecords*recordSize + " bytes");
+        System.out.println("Total Memory Size: " + (float) poolSize/Math.pow(10, 6) + " MB");
+        System.out.println("Size of Database: " + (float) (totalNumRecords*recordSize)/Math.pow(10, 6) + " MB");
         System.out.println("Block Size: " + blkSize + " bytes");
         System.out.println("Record Size: " + recordSize + " bytes");
         System.out.println("Number of Blocks Allocated: " + numBlksAllocated + " blocks");
