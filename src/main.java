@@ -16,7 +16,6 @@ public class main {
 		boolean exit = false;
 		Database db = null;
 		BPTree tree = null;
-
 		while(!exit) {
 			System.out.println("============================Select Byte Size============================");
 			System.out.println("1: Select 200 Bytes");
@@ -51,7 +50,6 @@ public class main {
 				Record rec = new Record(record[0], Float.parseFloat(String.valueOf(record[1])), Integer.parseInt(String.valueOf(record[2])));
 				
 				db.writeRecord(rec);
-
 				RecordBlock rb = new RecordBlock(rec, db.getBlock()); // need the block
 				int key = rec.getNumVotes();
 				tree.insertKey(key, rb);

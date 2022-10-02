@@ -99,6 +99,7 @@ public class Database {
             numBlksRemaining--;
         }
 
+
         System.out.println("Total Memory Size: " + (float) poolSize/Math.pow(10, 6) + " MB");
         System.out.println("Size of Database: " + (float) (totalNumRecords*recordSize)/Math.pow(10, 6) + " MB");
         System.out.println("Block Size: " + blkSize + " bytes");
